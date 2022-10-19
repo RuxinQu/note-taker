@@ -9,6 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.16.4"
+    "errorhandler": "^1.5.1",
+    "express": "^4.16.4",
+    "generate-unique-id": "^2.0.1",
+    "morgan": "^1.10.0"
   }
 }
