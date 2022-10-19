@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const generateUniqueId = require('generate-unique-id');
 const errorHandler = require('errorhandler');
-const { json } = require('express');
 
 app.use(errorHandler())
 app.use(bodyParser.json())
@@ -23,7 +22,7 @@ app.get('/notes', (req, res) => {
 })
 
 app.get('/api/notes', (req, res) => {
-    fs.readFile('./db/db.json', 'utf-8', (err, data) => {
+    fs.readFile('./db/db.json', 'utf8', (err, data) => {
         res.status(200).send(data);
     })
 })
@@ -38,15 +37,33 @@ app.post('/api/notes', (req, res) => {
         text: req.body.text
     }
     if (newNote.title && newNote.text) {
-        fs.readFile('./db/db.json', (err, data) => {
+        fs.readFile('./db/db.json', 'utf8', (err, data) => {
             const notes = JSON.parse(data);
             notes.push(newNote);
-            fs.writeFile('./db/db.json', JSON.stringify(notes), (data) => {
+            fs.writeFile('./db/db.json', JSON.stringify(notes), (err, data) => {
                 res.send(newNote);
             })
         })
     } else {
         res.status(400).send()
+    }
+})
+
+app.delete('/api/notes/:id', (req, res) => {
+    const id = req.params.id;
+    if (id) {
+        fs.readFile('./db/db.json', 'utf8', (err, data) => {
+            const notes = JSON.parse(data);
+            const index = notes.findIndex((note) => note.id == id);
+            if (index !== -1) {
+                notes.splice(index,1);
+                fs.writeFile('./db/db.json', JSON.stringify(notes), (err, data) => {
+                    res.status(204).send();
+                })
+            } else {
+                res.status(404).send()
+            }
+        })
     }
 })
 
