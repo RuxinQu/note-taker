@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 
 // Returns notes.html file 
 app.get('/notes', (req, res) => {
-    res.sendFile('public/notes.html', { root: __dirname });
+    res.status(200).sendFile('public/notes.html', { root: __dirname });
 })
 
 // Returns all the notes from db.json file 
@@ -47,7 +47,7 @@ app.post('/api/notes', (req, res) => {
             const notes = JSON.parse(data);
             notes.push(newNote);
             fs.writeFile('./db/db.json', JSON.stringify(notes), (err, data) => {
-                res.send(newNote);
+                res.status(201).send(newNote);
             })
         })
     } else {
