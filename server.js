@@ -25,15 +25,15 @@ app.get('/notes', (req, res) => {
 })
 
 // Returns all the notes from db.json file 
-app.get('/api/notes', (req, res) => {
+app.get('/api/notes', (req, res, next) => {
     fs.readFile('./db/db.json', 'utf8', (err, data) => {
-        res.status(200).send(data);
+        err ? next(err) : res.status(200).send(data);
     })
 })
 
 // Handles posted data. Create a newNote variable to store the data from the request body, parse the json
 // data from db.json and push the newNote to the array. Then stringify the array and write to the db.json file
-app.post('/api/notes', (req, res) => {
+app.post('/api/notes', (req, res, next) => {
     const newNote = {
         id: generateUniqueId({
             length: 5,
@@ -42,17 +42,17 @@ app.post('/api/notes', (req, res) => {
         title: req.body.title,
         text: req.body.text
     }
-    if (newNote.title && newNote.text) {
-        fs.readFile('./db/db.json', 'utf8', (err, data) => {
-            const notes = JSON.parse(data);
-            notes.push(newNote);
-            fs.writeFile('./db/db.json', JSON.stringify(notes), (err, data) => {
-                res.status(201).send(newNote);
-            })
+
+    fs.readFile('./db/db.json', 'utf8', (err, data) => {
+        if (err) { next(err) }
+        const notes = JSON.parse(data);
+        notes.push(newNote);
+        fs.writeFile('./db/db.json', JSON.stringify(notes), (err) => {
+            if (err) { next(err) }
+            res.status(201).send(newNote);
         })
-    } else {
-        res.status(400).send()
-    }
+    })
+
 })
 
 // The id is parsed in req.params object. Find the element in the array with the id same from the request, then
@@ -61,11 +61,13 @@ app.delete('/api/notes/:id', (req, res) => {
     const id = req.params.id;
     if (id) {
         fs.readFile('./db/db.json', 'utf8', (err, data) => {
+            if (err) { next(err) }
             const notes = JSON.parse(data);
             const index = notes.findIndex((note) => note.id == id);
             if (index !== -1) {
-                notes.splice(index,1);
-                fs.writeFile('./db/db.json', JSON.stringify(notes), (err, data) => {
+                notes.splice(index, 1);
+                fs.writeFile('./db/db.json', JSON.stringify(notes), (err) => {
+                    if (err) { next(err) }
                     res.status(204).send();
                 })
             } else {
