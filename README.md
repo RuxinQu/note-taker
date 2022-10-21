@@ -17,7 +17,7 @@ View the deployed website: https://note-taker-4001.herokuapp.com
 * click on the 'delete' icon appears after each note, the user is able to delete the note from the list.
 
 The animation below shows the appearance and functionality of the project:
-![note taker demo video](./assets/note-taker.gif)
+![note taker demo video](./assets/note-taker-demo.gif)
 
 ## Technology Used
 * [Express.js](https://expressjs.com)
